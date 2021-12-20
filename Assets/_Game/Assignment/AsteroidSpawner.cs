@@ -1,4 +1,5 @@
 ﻿using System;
+using DefaultNamespace.ScriptableEvents;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -11,6 +12,8 @@ namespace Asteroids
         [SerializeField] private float _maxSpawnTime;
         [SerializeField] private int _minAmount;
         [SerializeField] private int _maxAmount;
+        [SerializeField] private AsteroidSet _asteroids;
+        
         
         private float _timer;
         private float _nextSpawnTime;
@@ -66,7 +69,17 @@ namespace Asteroids
             {
                 var location = GetSpawnLocation();
                 var position = GetStartPosition(location);
-                Instantiate(_asteroidPrefab, position, Quaternion.identity);
+                Asteroid asteroid = Instantiate(_asteroidPrefab, position, Quaternion.identity);
+                _asteroids.Add(asteroid);
+            }
+        }
+        
+        public void SplitSpawn(Vector3 asteroidPosition)
+        {
+            for (var i = 0; i < 2; i++)
+            {
+                Asteroid asteroid = Instantiate(_asteroidPrefab, asteroidPosition, Quaternion.identity);
+                _asteroids.Add(asteroid);
             }
         }
 

@@ -8,7 +8,8 @@ namespace Asteroids
     [RequireComponent(typeof(Rigidbody2D))]
     public class Asteroid : MonoBehaviour
     {
-        [SerializeField] private ScriptableEventInt _onAsteroidDestroyed;
+        [SerializeField] private ScriptableEventInt _onAsteroidHit;
+        [SerializeField] private ScriptableEventVector3 _onAsteroidSplit;
         
         [Header("Config:")]
         [SerializeField] private float _minForce;
@@ -17,6 +18,7 @@ namespace Asteroids
         [SerializeField] private float _maxSize;
         [SerializeField] private float _minTorque;
         [SerializeField] private float _maxTorque;
+        
 
         [Header("References:")]
         [SerializeField] private Transform _shape;
@@ -25,7 +27,22 @@ namespace Asteroids
         private Vector3 _direction;
         private int _instanceId;
 
-        private void Start()
+        public int GetId()
+        {
+            return _instanceId;
+        }
+
+        private bool IsAsteroidLargeEnoughForSplit()
+        {
+            if (_shape.localScale.x < _minSize * 2)
+            {
+                return false;
+            }
+
+            return true;
+        }
+        
+        private void Awake()
         {
             _rigidbody = GetComponent<Rigidbody2D>();
             _instanceId = GetInstanceID();
@@ -33,40 +50,27 @@ namespace Asteroids
             SetDirection();
             AddForce();
             AddTorque();
-            SetSize();
+            RandomizeSize();
         }
         
         private void OnTriggerEnter2D(Collider2D other)
         {
             if (string.Equals(other.tag, "Laser"))
             {
-               HitByLaser();
+                Destroy(other.gameObject);
+               FlagForHit();
             }
         }
 
-        private void HitByLaser()
+        private void FlagForHit()
         {
-            _onAsteroidDestroyed.Raise(_instanceId);
-            Destroy(gameObject);
+            _onAsteroidHit.Raise(_instanceId);
+            if (IsAsteroidLargeEnoughForSplit())
+            {
+                _onAsteroidSplit.Raise(transform.position);
+            }
         }
 
-        // TODO Can we move this to a single listener, something like an AsteroidDestroyer?
-        public void OnHitByLaser(IntReference asteroidId)
-        {
-            if (_instanceId == asteroidId.GetValue())
-            {
-                Destroy(gameObject);
-            }
-        }
-        
-        public void OnHitByLaserInt(int asteroidId)
-        {
-            if (_instanceId == asteroidId)
-            {
-                Destroy(gameObject);
-            }
-        }
-        
         private void SetDirection()
         {
             var size = new Vector2(3f, 3f);
@@ -96,7 +100,7 @@ namespace Asteroids
             _rigidbody.AddTorque(torque, ForceMode2D.Impulse);
         }
 
-        private void SetSize()
+        private void RandomizeSize()
         {
             var size = Random.Range(_minSize, _maxSize);
             _shape.localScale = new Vector3(size, size, 0f);
