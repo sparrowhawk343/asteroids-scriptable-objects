@@ -12,9 +12,11 @@ namespace Asteroids
         [SerializeField] private float _maxSpawnTime;
         [SerializeField] private int _minAmount;
         [SerializeField] private int _maxAmount;
+        [SerializeField] private float _minSize;
+        [SerializeField] private float _maxSize;
         [SerializeField] private AsteroidSet _asteroids;
-        
-        
+
+
         private float _timer;
         private float _nextSpawnTime;
         private Camera _camera;
@@ -64,23 +66,38 @@ namespace Asteroids
         private void Spawn()
         {
             var amount = Random.Range(_minAmount, _maxAmount + 1);
-            
+
             for (var i = 0; i < amount; i++)
             {
                 var location = GetSpawnLocation();
                 var position = GetStartPosition(location);
                 Asteroid asteroid = Instantiate(_asteroidPrefab, position, Quaternion.identity);
+                SetRandomSize(asteroid);
                 _asteroids.Add(asteroid);
             }
         }
-        
+
         public void SplitSpawn(Vector3 asteroidPosition)
         {
             for (var i = 0; i < 2; i++)
             {
                 Asteroid asteroid = Instantiate(_asteroidPrefab, asteroidPosition, Quaternion.identity);
+                SetSplitSize(asteroid);
                 _asteroids.Add(asteroid);
             }
+        }
+
+        private void SetRandomSize(Asteroid asteroid)
+        {
+            float randomizedSize = Random.Range(_minSize, _maxSize);
+            asteroid.SetSize(randomizedSize);
+        }
+
+        private void SetSplitSize(Asteroid asteroid)
+        {
+            SetRandomSize(asteroid);
+            float newSize = asteroid.GetSize() * 0.5f;
+            asteroid.SetSize(newSize);
         }
 
         private static SpawnLocation GetSpawnLocation()
@@ -98,8 +115,8 @@ namespace Asteroids
 
         private Vector3 GetStartPosition(SpawnLocation spawnLocation)
         {
-            var pos = new Vector3 { z = Mathf.Abs(_camera.transform.position.z) };
-            
+            var pos = new Vector3 {z = Mathf.Abs(_camera.transform.position.z)};
+
             const float padding = 5f;
             switch (spawnLocation)
             {
@@ -122,7 +139,7 @@ namespace Asteroids
                 default:
                     throw new ArgumentOutOfRangeException(nameof(spawnLocation), spawnLocation, null);
             }
-            
+
             return _camera.ScreenToWorldPoint(pos);
         }
     }

@@ -10,18 +10,17 @@ namespace Asteroids
     {
         [SerializeField] private ScriptableEventInt _onAsteroidHit;
         [SerializeField] private ScriptableEventVector3 _onAsteroidSplit;
-        
-        [Header("Config:")]
-        [SerializeField] private float _minForce;
+
+        [Header("Config:")] [SerializeField] private float _minForce;
         [SerializeField] private float _maxForce;
-        [SerializeField] private float _minSize;
-        [SerializeField] private float _maxSize;
         [SerializeField] private float _minTorque;
         [SerializeField] private float _maxTorque;
+        [SerializeField] private float _minSplitSize;
         
 
-        [Header("References:")]
-        [SerializeField] private Transform _shape;
+
+        [Header("References:")] [SerializeField]
+        private Transform _shape;
 
         private Rigidbody2D _rigidbody;
         private Vector3 _direction;
@@ -34,31 +33,40 @@ namespace Asteroids
 
         private bool IsAsteroidLargeEnoughForSplit()
         {
-            if (_shape.localScale.x < _minSize * 2)
+            if (_shape.localScale.x < _minSplitSize)
             {
                 return false;
             }
 
             return true;
         }
+
+        public float GetSize()
+        {
+            return _shape.localScale.x;
+        }
         
+        public void SetSize(float size)
+        {
+            _shape.localScale = new Vector3(size, size, 0f);
+        }
+
         private void Awake()
         {
             _rigidbody = GetComponent<Rigidbody2D>();
             _instanceId = GetInstanceID();
-            
+
             SetDirection();
             AddForce();
             AddTorque();
-            RandomizeSize();
         }
-        
+
         private void OnTriggerEnter2D(Collider2D other)
         {
             if (string.Equals(other.tag, "Laser"))
             {
                 Destroy(other.gameObject);
-               FlagForHit();
+                FlagForHit();
             }
         }
 
@@ -86,7 +94,7 @@ namespace Asteroids
         private void AddForce()
         {
             var force = Random.Range(_minForce, _maxForce);
-            _rigidbody.AddForce( _direction * force, ForceMode2D.Impulse);
+            _rigidbody.AddForce(_direction * force, ForceMode2D.Impulse);
         }
 
         private void AddTorque()
@@ -96,14 +104,8 @@ namespace Asteroids
 
             if (roll == 0)
                 torque = -torque;
-            
-            _rigidbody.AddTorque(torque, ForceMode2D.Impulse);
-        }
 
-        private void RandomizeSize()
-        {
-            var size = Random.Range(_minSize, _maxSize);
-            _shape.localScale = new Vector3(size, size, 0f);
+            _rigidbody.AddTorque(torque, ForceMode2D.Impulse);
         }
     }
 }

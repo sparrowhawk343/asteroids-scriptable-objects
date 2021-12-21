@@ -49,10 +49,9 @@ MonoBehaviour:
   _onAsteroidSplit: {fileID: 11400000, guid: 2e1a8dbb20f017242b2eab2087965e93, type: 2}
   _minForce: 2
   _maxForce: 6
-  _minSize: 0.2
-  _maxSize: 1
   _minTorque: 0.1
   _maxTorque: 0.5
+  _minSplitSize: 0.4
   _shape: {fileID: 1524412162417054026}
 --- !u!50 &1784223117350305362
 Rigidbody2D:

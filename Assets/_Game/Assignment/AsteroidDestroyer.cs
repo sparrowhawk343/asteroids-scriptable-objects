@@ -8,13 +8,13 @@ namespace Asteroids
     public class AsteroidDestroyer : MonoBehaviour
     {
         [SerializeField] private AsteroidSet _asteroids;
-        
+
 
         public void OnAsteroidHitByLaser(int asteroidId)
         {
             Asteroid asteroid = _asteroids.Get(asteroidId);
-            
-            Destroy(asteroid);
+
+            Destroy(asteroid.gameObject);
             UnregisterAsteroid(asteroid);
         }
 

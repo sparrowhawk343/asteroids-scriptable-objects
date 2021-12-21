@@ -15,19 +15,16 @@ namespace Asteroids
 
         public void Add(Asteroid asteroid)
         {
-            Debug.Log("added asteroid " + asteroid.GetId());
             _asteroids.Add(asteroid.GetId(), asteroid);
         }
 
         public void Remove(Asteroid asteroid)
         {
-            Debug.Log("removed asteroid " + asteroid.GetId());
             _asteroids.Remove(asteroid.GetId());
         }
 
         public Asteroid Get(int id)
         {
-            Debug.Log("trying to get asteroid with id " + id);
             return _asteroids[id];
         }
 

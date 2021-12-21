@@ -318,6 +318,8 @@ MonoBehaviour:
   _maxSpawnTime: 4
   _minAmount: 1
   _maxAmount: 2
+  _minSize: 0.2
+  _maxSize: 1
   _asteroids: {fileID: 11400000, guid: 12ee404cd7280244dab080045467c753, type: 2}
 --- !u!4 &1867257717
 Transform:
